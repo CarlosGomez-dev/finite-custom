@@ -9,7 +9,7 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 156
-        versionName "6.7.1"
+        versionName "0.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -17,8 +17,17 @@ android {
             }
         }
     }
+    signingConfigs {
+        release {
+            storeFile file("/content/Infinity.jks")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias System.getenv("KEY_ALIAS")
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.releas
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
