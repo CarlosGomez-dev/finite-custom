@@ -1,9 +1,8 @@
-name: Build
+name: Build APK
 
 on:
-  push:
   pull_request:
-  workflow_dispatch:
+    branches: [master]
 
 jobs:
   Build:
@@ -19,14 +18,27 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
 
+    - name: Download Keystore
+      run: |
+        mkdir -p /content/
+        curl -LJO https://github.com/TanukiAI/Infinity-keystore/raw/main/Infinity.jks
+        mv Infinity.jks /content/
+
     - name: Setup and build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
         arguments: build -x lint
+      env:
+        KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
+        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        USER_AGENT: ${{ secrets.USER_AGENT }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
 
     - name: Upload apk
       uses: actions/upload-artifact@v3
       with:
-        name: Infinity-${{github.sha}}
+        name: finite-custom-${{github.sha}}
         path: app/build/outputs/apk/
         if-no-files-found: error
